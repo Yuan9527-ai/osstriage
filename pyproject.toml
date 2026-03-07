@@ -29,9 +29,9 @@ dependencies = [
 osstriage = "osstriage.cli:app"
 
 [project.urls]
-Homepage = "https://github.com/your-org/osstriage"
-Repository = "https://github.com/your-org/osstriage"
-Issues = "https://github.com/your-org/osstriage/issues"
+Homepage = "https://github.com/koomatoz/osstriage"
+Repository = "https://github.com/koomatoz/osstriage"
+Issues = "https://github.com/koomatoz/osstriage/issues"
 
 [build-system]
 requires = ["hatchling"]

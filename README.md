@@ -73,7 +73,7 @@ osstriage/
 uv tool install osstriage
 
 # Or clone and install locally for development
-git clone https://github.com/your-org/osstriage.git
+git clone https://github.com/koomatoz/osstriage.git
 cd osstriage
 uv sync
 ```
@@ -177,7 +177,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: your-org/osstriage@main
+      - uses: koomatoz/osstriage@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
@@ -191,7 +191,7 @@ jobs:
 
 ```bash
 # Clone and set up dev environment
-git clone https://github.com/your-org/osstriage.git
+git clone https://github.com/koomatoz/osstriage.git
 cd osstriage
 uv sync
 
