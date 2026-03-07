@@ -1,0 +1,77 @@
+# OSSTriage — Automated PR Review & Issue Triage
+# Runs on every pull_request and issues event to provide AI-powered review.
+
+name: OSSTriage CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  issues:
+    types: [opened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: osstriage-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review-pr:
+    name: "🤖 AI Code Review"
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Set up Python 3.13
+        run: uv python install 3.13
+
+      - name: Install OSSTriage
+        run: uv tool install osstriage
+
+      - name: Run PR Review
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          osstriage review-pr \
+            "https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}"
+
+  triage-issue:
+    name: "🏷️ AI Issue Triage"
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issues' && github.event.action == 'opened'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Set up Python 3.13
+        run: uv python install 3.13
+
+      - name: Install OSSTriage
+        run: uv tool install osstriage
+
+      - name: Triage Issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          osstriage triage-issue \
+            --apply-labels \
+            "https://github.com/${{ github.repository }}/issues/${{ github.event.issue.number }}"

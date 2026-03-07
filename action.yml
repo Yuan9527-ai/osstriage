@@ -1,0 +1,59 @@
+name: "OSSTriage — AI PR Review & Issue Triage"
+description: "Automated Pull Request review and Issue triaging powered by DSPy and LLMs. Reduce maintainer burnout."
+author: "OSSTriage Contributors"
+
+branding:
+  icon: "check-circle"
+  color: "purple"
+
+inputs:
+  github-token:
+    description: "GitHub token with PR and Issues write access"
+    required: true
+    default: ${{ github.token }}
+  openai-api-key:
+    description: "OpenAI API key for LLM-powered analysis"
+    required: true
+  model:
+    description: "LLM model to use (default: gpt-4o)"
+    required: false
+    default: "gpt-4o"
+  command:
+    description: "Command to run: review-pr or triage-issue"
+    required: false
+    default: "review-pr"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        version: "latest"
+
+    - name: Set up Python
+      shell: bash
+      run: uv python install 3.13
+
+    - name: Install OSSTriage
+      shell: bash
+      run: uv tool install osstriage
+
+    - name: Run OSSTriage
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        OPENAI_API_KEY: ${{ inputs.openai-api-key }}
+        OSSTRIAGE_MODEL: ${{ inputs.model }}
+      run: |
+        if [ "${{ inputs.command }}" = "review-pr" ]; then
+          osstriage review-pr \
+            "https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}"
+        elif [ "${{ inputs.command }}" = "triage-issue" ]; then
+          osstriage triage-issue \
+            --apply-labels \
+            "https://github.com/${{ github.repository }}/issues/${{ github.event.issue.number }}"
+        else
+          echo "Unknown command: ${{ inputs.command }}"
+          exit 1
+        fi
