@@ -37,7 +37,7 @@ jobs:
         run: uv python install 3.13
 
       - name: Install OSSTriage
-        run: uv tool install osstriage
+        run: uv tool install .
 
       - name: Run PR Review
         env:
@@ -65,7 +65,7 @@ jobs:
         run: uv python install 3.13
 
       - name: Install OSSTriage
-        run: uv tool install osstriage
+        run: uv tool install .
 
       - name: Triage Issue
         env:
